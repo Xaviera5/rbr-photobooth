@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle Red Bull Racing | Photo Booth</title>
+<link rel="stylesheet" href="{% static 'booth/css/style.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-badge">RB</div>
+    <div class="topbar-title">
+      <h1>ORACLE RED BULL RACING</h1>
+      <span>OFFICIAL PHOTOBOOTH &middot; 2026 SEASON</span>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <span class="session-pill">SESSION ACTIVE</span>
+  </div>
+  <div class="topbar-right">
+    <div class="driver-mini">
+      <strong>MAX VERSTAPPEN</strong>
+      <span>#1 &middot; 4x WORLD CHAMPION</span>
+    </div>
+    <div class="number-tag">1</div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <section class="booth-column">
+    <div class="booth-header">
+      <h2>PHOTO BOOTH</h2>
+      <span class="shots-counter" id="shotsCounter">0 SHOTS</span>
+    </div>
+
+    <div class="camera-frame">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+
+      <video id="cameraFeed" autoplay playsinline muted></video>
+      <canvas id="captureCanvas" class="hidden"></canvas>
+      <img id="frameOverlay" class="frame-overlay" src="{% static 'booth/img/frame-max.png' %}" alt="">
+
+      <div id="cameraOverlay" class="camera-overlay">
+        <div class="overlay-icon">&#128247;</div>
+        <p id="overlayMessage">Camera access denied — grant permission to start</p>
+        <button id="retryBtn" class="btn-outline-red">RETRY</button>
+      </div>
+
+      <button id="shutterBtn" class="shutter-btn hidden" title="Capture photo"></button>
+
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+    </div>
+
+    <div class="booth-footer-row">
+      <span class="status-dot" id="statusDot">OFFLINE</span>
+      <span class="version-tag">RBR PHOTOBOOTH V2.6</span>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="original">ORIGINAL</button>
+      <button class="filter-btn" data-filter="rbr">RBR MODE</button>
+      <button class="filter-btn" data-filter="mono">MONO</button>
+      <button class="filter-btn" data-filter="speed">SPEED</button>
+    </div>
+
+    <div class="tabs-row">
+      <button class="tab-btn active" data-tab="gallery">PHOTO GALLERY</button>
+      <button class="tab-btn" data-tab="results">RACE RESULTS</button>
+    </div>
+
+    <div class="tab-panel" id="panel-gallery">
+      <div class="gallery-grid" id="galleryGrid">
+        {% for photo in photos %}
+        <div class="gallery-item">
+          <img src="{{ photo.image.url }}" alt="Captured photo">
+          <span class="gallery-tag">{{ photo.get_filter_used_display }}</span>
+        </div>
+        {% empty %}
+        <p class="empty-msg" id="emptyMsg">NO PHOTOS YET<br><small>Capture your first shot above</small></p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="tab-panel hidden" id="panel-results">
+      <p class="empty-msg">Race results coming soon.</p>
+    </div>
+  </section>
+
+  <aside class="side-column">
+    <div class="driver-card">
+      <div class="driver-card-bg"></div>
+      <div class="driver-card-info">
+        <h3>MAX VERSTAPPEN</h3>
+        <span>ORACLE RED BULL RACING &middot; #1</span>
+      </div>
+      <div class="driver-card-number">1</div>
+    </div>
+
+    <div class="stats-card">
+      <h4>SEASON 2026 STATS</h4>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">CHAMPIONSHIPS</span>
+          <span class="stat-value">4</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">RACE WINS</span>
+          <span class="stat-value">53</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">POLE POSITIONS</span>
+          <span class="stat-value">41</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">POINTS</span>
+          <span class="stat-value">118 <small>PTS</small></span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">FASTEST LAPS</span>
+          <span class="stat-value">32</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">PODIUMS</span>
+          <span class="stat-value">107</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="countdown-card">
+      <span class="countdown-label">&#9679; NEXT RACE</span>
+      <h4>HUNGARIAN GRAND PRIX</h4>
+      <span class="countdown-sub">Hungaroring</span>
+      <div class="countdown-timer" id="countdownTimer">
+        <div><span id="cd-days">00</span><small>DAYS</small></div>
+        <div><span id="cd-hours">00</span><small>HRS</small></div>
+        <div><span id="cd-mins">00</span><small>MIN</small></div>
+        <div><span id="cd-secs">00</span><small>SEC</small></div>
+      </div>
+    </div>
+
+    <div class="pit-crew-card">
+      <div class="pit-crew-img"></div>
+      <span>ORACLE RBR PIT CREW</span>
+    </div>
+
+    <div class="partnerships-card">
+      <h4>PARTNERSHIPS</h4>
+      <div class="partner-row">
+        <span>ORACLE</span>
+        <span>HONDA</span>
+        <span>MOBIL 1</span>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<script src="{% static 'booth/js/countdown.js' %}"></script>
+<script src="{% static 'booth/js/camera.js' %}"></script>
+</body>
+</html>
